@@ -1,0 +1,97 @@
+Code for NEA:
+
+Public Class Form1
+	Shared Sub Main()
+		Console.WriteLine("S")
+	End Sub
+
+	Private Sub BtnFilePath_Click(sender As Object, e As EventArgs) Handles btnFilePath.Click
+
+		Dim ofd As New OpenFileDialog
+
+		ofd.InitialDirectory = My.Computer.FileSystem.SpecialDirectories.MyDocuments
+
+		If ofd.ShowDialog = DialogResult.OK Then
+
+			TextBox1.Text = ofd.FileName
+
+		End If
+
+	End Sub
+
+	Public Class Node
+		Private LeftNode As Node = Nothing
+		Private RightNode As Node = Nothing
+		Private Val As Integer = 0
+		Public Function GetNodeVal()
+			Return Val
+		End Function
+		Public Sub New(ValueEntered As String) 'explicit instantiator
+			Val = ValueEntered
+			LeftNode = Nothing
+			RightNode = Nothing
+		End Sub
+		Public Function GetLeft()
+			Return LeftNode
+		End Function
+		Public Function GetRight()
+			Return RightNode
+		End Function
+		Public Sub SetLeft(n As Node)
+			LeftNode = n
+		End Sub
+		Public Sub SetRight(n As Node)
+			RightNode = n
+		End Sub
+	End Class
+	Private Shared Function MinimumDistance(distance As Integer(), shortestPathTreeSet As Boolean(), verticesCount As Integer) As Integer
+		Dim min As Integer = Integer.MaxValue
+		Dim minIndex As Integer = 0
+		'Finds shortest distance between nodes'
+		For v As Integer = 0 To verticesCount - 1
+			If shortestPathTreeSet(v) = False AndAlso distance(v) <= min Then
+				min = distance(v)
+				minIndex = v
+			End If
+		Next
+
+		Return minIndex
+	End Function
+
+	Private Shared Sub Print(distance As Integer(), verticesCount As Integer)
+		Console.WriteLine("Vertex    Distance from source")
+
+		For i As Integer = 0 To verticesCount - 1
+			Console.WriteLine("{0}" & vbTab & "  {1}", i, distance(i))
+		Next
+	End Sub
+
+	Public Shared Sub Dijkstra(graph As Integer(,), source As Integer, verticesCount As Integer)
+		Dim distance As Integer() = New Integer(verticesCount - 1) {}
+		Dim shortestPathTreeSet As Boolean() = New Boolean(verticesCount - 1) {}
+
+		For i As Integer = 0 To verticesCount - 1
+			distance(i) = Integer.MaxValue
+			shortestPathTreeSet(i) = False
+		Next
+
+		distance(source) = 0
+
+		For count As Integer = 0 To verticesCount - 2
+			Dim u As Integer = MinimumDistance(distance, shortestPathTreeSet, verticesCount)
+			shortestPathTreeSet(u) = True
+
+			For v As Integer = 0 To verticesCount - 1
+				If Not shortestPathTreeSet(v) AndAlso Convert.ToBoolean(graph(u, v)) AndAlso distance(u) <> Integer.MaxValue AndAlso distance(u) + graph(u, v) < distance(v) Then
+					distance(v) = distance(u) + graph(u, v)
+				End If
+			Next
+		Next
+
+		Print(distance, verticesCount)
+	End Sub
+
+	Private Sub Panel1_Paint(sender As Object, e As PaintEventArgs) Handles Panel1.Paint
+
+	End Sub
+End Class
